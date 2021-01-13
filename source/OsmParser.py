@@ -1,55 +1,14 @@
 #!/usr/bin/env python
-#import rospy
-ros_enable = True
 import sys
-sys.path.insert(0, 'source')
 import os
 from lxml import etree
 import argparse
 import utm
 
-try:
-    import rospy
-    from rospkg import RosPack
-except ImportError:
-    ros_enable = False
-    print('Lauching without ROS')
-
 from dict2sdf import GetSDF
 from osm2dict import Osm2Dict
 from getMapImage import getMapImage
 from getOsmFile import getOsmFile
-
-TIMER = 1 
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-def info_print(input = str()):
-    if ros_enable:
-        rospy.loginfo(input)
-    else:
-        print(bcolors.ENDC + input + bcolors.ENDC)
-
-def warn_print(input = str()):
-    if ros_enable:
-        rospy.logwarn(input)
-    else:
-        print(bcolors.WARNING + input + bcolors.ENDC)
-
-def err_print(input = str()):
-    if ros_enable:
-        rospy.logerr(input)
-    else:
-        print(bcolors.FAIL + input + bcolors.ENDC)
 
 class OsmParser:
     def __init__(self):
@@ -73,8 +32,7 @@ class OsmParser:
                             help=('Give the bounding box for the area\n' +
                                 'Format: MinLon MinLat MaxLon MaxLat'),
                             nargs='*',
-                            type=float,
-                            default=[-75.380, 40.606, -75.377, 40.609])
+                            type=float)
         parser.add_argument('-r', '--roads',
                             help='Display Roads',
                             action='store_true')
@@ -124,8 +82,13 @@ class OsmParser:
                                 root[0].get('maxlon'),
                                 root[0].get('maxlat')]
 
+        else:
+            if not self.arg.boundingbox:
+                print("Can not get osm file from server without bounding box")
+                sys.exit("No bounding box for target area")
+            
+            print("Downloading the osm data ... ")
 
-        info_print("Downloading the osm data ... ")
         osmDictionary = getOsmFile(self.args.boundingbox,
                                 self.args.osmFile, self.args.inputOsmFile)
  
@@ -134,11 +97,11 @@ class OsmParser:
         osmRoads = Osm2Dict(self.args.boundingbox[0], self.args.boundingbox[1],
                             osmDictionary, flags)
 
-        info_print("Extracting the map data for gazebo ...")
+        print("Extracting the map data for gazebo ...")
         #Get Road and model details
         roadPointWidthMap, modelPoseMap, buildingLocationMap = osmRoads.getMapDetails()
 
-        info_print("Building sdf file ...")
+        print("Building sdf file ...")
         #Initialize the getSdf class
         sdfFile = GetSDF()
 

@@ -30,19 +30,10 @@ class GetSDF:
         utm_coord.extend(utm.from_latlon(map_coord[3], map_coord[2])[:2])
         utm_coord.extend(utm.from_latlon(map_coord[1], map_coord[0])[:2])
 
-        #self.offset.extend([numpy.abs(utm_coord[0] - utm_coord[2])/2,\
-        #                   numpy.abs(utm_coord[1] - utm_coord[3])/2])
-        self.offset.extend([0,0])
-        print(self.offset)
-    def addSky(self):
-        data_sky = """<scene>
-      <sky>
-        <clouds>
-          <speed>12</speed>
-        </clouds>
-      </sky>
-    </scene>"""
-        self.sdf.xpath('//world')[0].append(Et.fromstring(data_sky))
+        self.offset.extend([numpy.abs(utm_coord[0] - utm_coord[2])/2,\
+                            numpy.abs(utm_coord[1] - utm_coord[3])/2])
+
+    
     def addGroundPlane(self, boundingbox):
         data = """    <model name="ground">
       <link name="body">
@@ -139,7 +130,7 @@ class GetSDF:
                       if road.get('name') == roadName]
 
         roadWidth = Et.SubElement(roadWanted[0], 'width')
-        roadWidth.text = str(10)
+        roadWidth.text = str(width)
 
     def addRoadPoint(self, point, roadName):
         '''Add points required to build a road, specified by the roadname'''
