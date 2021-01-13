@@ -35,7 +35,7 @@ class GetSDFTest(unittest.TestCase):
         sdfFile = GetSDF()
 
         #Set up the spherical coordinates
-        sdfFile.addSphericalCoords(osmRoads.getLat(), osmRoads.getLon())
+        sdfFile.addSphericalCoords([-75.93, 40.61, -75.90, 40.62])
 
         #add Required models
         sdfFile.includeModel("sun")
@@ -79,7 +79,7 @@ class GetSDFTest(unittest.TestCase):
 
     def gzCheck(self):
         '''runs the gzsdf check command on the output file'''
-        return os.system('gzsdf check outFile.sdf')
+        return os.system('gz sdf -k outFile.sdf')
 
     def testXMLSchema(self):
         '''tests whether the output file
