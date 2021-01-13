@@ -67,13 +67,15 @@ def getMapImage(osmFile, map_output):
         rule = mapnik.Rule()
 
         rule.filter = mapnik.Expression('[highway]=' + "'" + highwayType + "'")
-
+	'''
         stk = mapnik.Stroke()
         stk.color = mapnik.Color(highwaList[highwayType]['color'])
         stk.line_cap = mapnik.line_cap.ROUND_CAP
         stk.width = highwaList[highwayType]['width']
-
-        line_symbolizer = mapnik.LineSymbolizer(stk)
+	'''
+        line_symbolizer = mapnik.LineSymbolizer()
+	line_symbolizer.stroke = mapnik.Color(highwaList[highwayType]['color'])
+	line_symbolizer.stroke_width = highwaList[highwayType]['width']
 
         rule.symbols.append(line_symbolizer)
 
@@ -81,7 +83,8 @@ def getMapImage(osmFile, map_output):
 
         rule2.filter = mapnik.Expression('[highway]=' + "'" +
                                          highwayType + "'")
-
+	
+	'''
         text_symbolizer = mapnik.TextSymbolizer(mapnik.Expression("[name]"),
                                                 "DejaVu Sans Book",
                                                 highwaList[highwayType]
@@ -90,7 +93,7 @@ def getMapImage(osmFile, map_output):
         text_symbolizer.halo_fill = mapnik.Color('white')
 
         rule2.symbols.append(text_symbolizer)
-
+	'''
         styleType.rules.append(rule)
         styleType.rules.append(rule2)
 

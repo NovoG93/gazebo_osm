@@ -9,14 +9,15 @@
 ##############################################################################
 
 import numpy as np
+import utm
 
 
 class Osm2Dict:
 
     def __init__(self, lonStart, latStart, data, flags=['a']):
 
-        self.latStart = latStart
-        self.lonStart = lonStart
+        self.latStart = float(latStart)
+        self.lonStart = float(lonStart)
         self.data = data
         self.displayAll = 'a' in flags
         self.displayModels = 'm' in flags
@@ -101,31 +102,23 @@ class Osm2Dict:
         if not coords.any():
             return []
 
-        lon2 = np.radians(coords[:, 0])
-        lat2 = np.radians(coords[:, 1])
+        # Use utm lib to convert lat lon to utm
+        x_point = list()
+        y_point = list()
+        start_point = list(utm.from_latlon(self.latStart, self.lonStart))[:2]
 
-        dLat = lat2-np.radians(self.latStart)
-        dLon = lon2-np.radians(self.lonStart)
+        for i in range(len(coords[:,0])):
+            point = list(utm.from_latlon(coords[:,1][i], coords[:,0][i]))[:2]
+            point[0] -= start_point[0]
+            point[1] -= start_point[1]
+            x_point.append(point[0])
+            y_point.append(point[1])
+        
+        point_list = np.array([x_point,
+                               y_point,
+                               np.zeros(np.shape(x_point))])
 
-        a = (np.sin(dLat/2) * np.sin(dLat/2) +
-             np.sin(dLon/2) * np.sin(dLon/2) *
-             np.cos(np.radians(self.latStart)) *
-             np.cos(lat2))
-
-        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1-a))
-
-        distance = self.R * c
-
-        angles = (np.arctan2(np.sin(dLon) * np.cos(lat2),
-                  np.cos(np.radians(self.latStart)) *
-                  np.sin(lat2) -
-                  np.sin(np.radians(self.latStart)) *
-                  np.cos(lat2) * np.cos(dLon)))
-
-        point = np.array([distance*np.cos(angles) * 1000,
-                          -distance*np.sin(angles) * 1000,
-                          np.zeros(np.shape(distance))*1000])
-        return point
+        return point_list
 
     def latLonToPoints(self, node_ref):
         '''Pulls out the latitude and longitudes of the nodes in the
@@ -227,6 +220,7 @@ class Osm2Dict:
 
             if node_ref:
                 location = self.latLonToPoints(node_ref)
+                
 
                 buildingLoc = np.array([[sum(location[0, :]) /
                                          len(location[0, :])],
