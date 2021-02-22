@@ -12,15 +12,7 @@ Dependencies:
 
 	Python 2.7
 
-	Mapnik:
-
-	sudo apt-get install -y python-software-properties
-
-	sudo add-apt-repository ppa:mapnik/v2.2.0
-
-	sudo apt-get update
-
-	sudo apt-get install libmapnik libmapnik-dev mapnik-utils python-mapnik
+	sudo apt-get install libmapnik* libmapnik-dev mapnik-utils python-mapnik
 
 
 Files:
@@ -83,13 +75,13 @@ Unit testing for each of the source files is provided in the testfiles/ folder.
 
 Usage:
 
-	Run gz_osm.py file
+	Run OsmParser.py file
 
-		$ python gz_osm.py 
+		$ python gz_osm.py -O map.osm		# export map from openstreetmap
 
                 or 
 
-                $ ./gz_osm.py [-h] [-f OUTFILE] [-o OSMFILE] [-i IMAGEFILE] [-d DIRECTORY]
+                $ ./gz_osm.py [-h] [-f OUTFILE] [-O OSMFILE] [-i IMAGEFILE] [-d DIRECTORY]
 	                 [-B [BOUNDINGBOX [BOUNDINGBOX ...]]] [-r] [-m] [-b] [-a][--interactive]
 	
 	Output file: outFile.sdf (default)
